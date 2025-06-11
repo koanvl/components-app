@@ -1,0 +1,104 @@
+<div class="max-w-4xl mx-auto p-6">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Edit Portfolio Item</h1>
+    <p class="text-gray-600">Update your project details and showcase</p>
+  </div>
+
+  <!-- Form -->
+  <%= form_with model: @portfolio, local: true, multipart: true, class: "space-y-6" do |form| %>
+    <!-- Error Messages -->
+    <% if @portfolio.errors.any? %>
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        <h4 class="font-medium mb-2"><%= pluralize(@portfolio.errors.count, "error") %> prohibited this portfolio item from being saved:</h4>
+        <ul class="list-disc list-inside space-y-1">
+          <% @portfolio.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- Title -->
+    <div>
+      <%= form.label :title, class: "block mb-2 text-sm font-medium text-gray-900" %>
+      <%= form.text_field :title, 
+          class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5",
+          placeholder: "Project title" %>
+    </div>
+
+    <!-- Description -->
+    <div>
+      <%= form.label :description, class: "block mb-2 text-sm font-medium text-gray-900" %>
+      <%= form.text_area :description, 
+          rows: 6,
+          class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5",
+          placeholder: "Describe your project, the challenges you solved, and the results achieved..." %>
+    </div>
+
+    <!-- Project URL -->
+    <div>
+      <%= form.label :project_url, "Project URL (optional)", class: "block mb-2 text-sm font-medium text-gray-900" %>
+      <%= form.url_field :project_url, 
+          class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5",
+          placeholder: "https://example.com" %>
+    </div>
+
+    <!-- Technologies -->
+    <div>
+      <%= form.label :technologies, class: "block mb-2 text-sm font-medium text-gray-900" %>
+      <%= form.text_field :technologies, 
+          class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5",
+          placeholder: "React, Node.js, PostgreSQL, AWS" %>
+      <p class="mt-1 text-sm text-gray-500">Separate technologies with commas</p>
+    </div>
+
+    <!-- Current Images -->
+    <% if @portfolio.has_images? %>
+      <div>
+        <label class="block mb-2 text-sm font-medium text-gray-900">Current Images</label>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <% @portfolio.images.each do |image| %>
+            <div class="relative group">
+              <%= image_tag image, class: "w-full h-24 object-cover rounded-lg" %>
+              <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                <span class="text-white text-xs">Current Image</span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">To replace images, upload new ones below. Current images will be replaced.</p>
+      </div>
+    <% end %>
+
+    <!-- Images Upload -->
+    <div>
+      <%= form.label :images, "Project Images", class: "block mb-2 text-sm font-medium text-gray-900" %>
+      <div class="flex items-center justify-center w-full">
+        <label for="portfolio_images" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+          <div class="flex flex-col items-center justify-center pt-5 pb-6">
+            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+            </svg>
+            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+            <p class="text-xs text-gray-500">PNG, JPG or GIF (MAX. 5MB each)</p>
+            <p class="text-xs text-gray-400">Leave empty to keep current images</p>
+          </div>
+          <%= form.file_field :images, 
+              multiple: true, 
+              accept: "image/*",
+              id: "portfolio_images",
+              class: "hidden" %>
+        </label>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex items-center space-x-4 pt-6">
+      <%= form.submit "Update Portfolio Item", 
+          class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" %>
+      <%= link_to "Cancel", @portfolio, 
+          class: "py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200" %>
+    </div>
+  <% end %>
+</div>
