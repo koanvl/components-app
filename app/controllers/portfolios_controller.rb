@@ -1,10 +1,11 @@
 class PortfoliosController < ApplicationController
   before_action :authenticate_user!
-  before_action :ensure_freelancer!, except: [ :show, :freelancer_portfolio ]
   before_action :set_portfolio, only: [ :show, :edit, :update, :destroy ]
-  before_action :ensure_owner!, only: [ :edit, :update, :destroy ]
+  before_action :ensure_freelancer!, except: [ :show, :freelancer_portfolio, :index ]
+  before_action :ensure_portfolio_owner!, only: [ :edit, :update, :destroy ]
 
   def index
+    @freelancers = User.freelancer.includes(:portfolios, avatar_attachment: :blob)
   end
 
   def show
@@ -61,7 +62,7 @@ class PortfoliosController < ApplicationController
     end
   end
 
-  def ensure_owner!
+  def ensure_portfolio_owner!
     unless @portfolio.user == current_user
       redirect_to root_path, alert: "Access denied. You can only manage your own portfolio items."
     end

@@ -64,3 +64,217 @@
     </div>
   </div>
 </section>
+
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-primary-700 to-primary-900 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div class="text-center">
+      <h1 class="text-4xl md:text-6xl font-bold mb-6">
+        Find the Perfect
+        <span class="text-yellow-300">Freelancer</span>
+        for Your Project
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 text-primary-100 max-w-3xl mx-auto">
+        Connect with talented professionals and get your projects done efficiently. 
+        Join thousands of successful collaborations on FreelanceHub.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <% if user_signed_in? %>
+          <% if current_user.client? %>
+            <%= link_to "Post a Project", new_project_path, 
+                class: "bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-300 transition-colors" %>
+          <% else %>
+            <%= link_to "Browse Projects", projects_path, 
+                class: "bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-300 transition-colors" %>
+          <% end %>
+          <%= link_to "View Freelancers", portfolios_path, 
+              class: "bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-primary-700 transition-colors" %>
+        <% else %>
+          <%= link_to "Get Started", new_user_registration_path, 
+              class: "bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-300 transition-colors" %>
+          <%= link_to "Browse Projects", projects_path, 
+              class: "bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-primary-700 transition-colors" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+      <div class="text-center">
+        <div class="text-3xl md:text-4xl font-bold text-primary-700 mb-2">
+          <%= number_with_delimiter(@stats[:total_projects]) %>
+        </div>
+        <div class="text-gray-600 font-medium">Total Projects</div>
+      </div>
+      <div class="text-center">
+        <div class="text-3xl md:text-4xl font-bold text-green-600 mb-2">
+          <%= number_with_delimiter(@stats[:active_projects]) %>
+        </div>
+        <div class="text-gray-600 font-medium">Active Projects</div>
+      </div>
+      <div class="text-center">
+        <div class="text-3xl md:text-4xl font-bold text-blue-600 mb-2">
+          <%= number_with_delimiter(@stats[:total_freelancers]) %>
+        </div>
+        <div class="text-gray-600 font-medium">Freelancers</div>
+      </div>
+      <div class="text-center">
+        <div class="text-3xl md:text-4xl font-bold text-purple-600 mb-2">
+          <%= number_with_delimiter(@stats[:total_clients]) %>
+        </div>
+        <div class="text-gray-600 font-medium">Clients</div>
+      </div>
+      <div class="text-center">
+        <div class="text-3xl md:text-4xl font-bold text-yellow-600 mb-2">
+          <%= number_with_delimiter(@stats[:completed_projects]) %>
+        </div>
+        <div class="text-gray-600 font-medium">Completed</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Recent Projects Section -->
+<% if @recent_projects.any? %>
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Latest Projects
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Discover exciting opportunities from clients around the world
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <% @recent_projects.each do |project| %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6">
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="text-lg font-semibold text-gray-900 line-clamp-2">
+                <%= link_to project.title, project_path(project), class: "hover:text-primary-700 transition-colors" %>
+              </h3>
+              <span class="text-lg font-bold text-primary-700 whitespace-nowrap ml-4">
+                <%= project.budget_range %>
+              </span>
+            </div>
+
+            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+              <%= truncate(project.description, length: 120) %>
+            </p>
+
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+              <span class="flex items-center">
+                <i class="fas fa-user mr-1"></i>
+                <%= project.client.display_name %>
+              </span>
+              <span class="flex items-center">
+                <i class="fas fa-calendar mr-1"></i>
+                <%= time_ago_in_words(project.created_at) %> ago
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-1 bg-primary-100 text-primary-800 text-xs rounded-full">
+                <%= project.category.titleize %>
+              </span>
+              <%= link_to "View Details", project_path(project), 
+                  class: "text-primary-700 hover:text-primary-800 font-medium text-sm" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="text-center">
+        <%= link_to "View All Projects", projects_path, 
+            class: "bg-primary-700 text-white px-8 py-3 rounded-lg hover:bg-primary-800 transition-colors font-medium" %>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<!-- Featured Freelancers Section -->
+<% if @featured_freelancers.any? %>
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Featured Freelancers
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Connect with top-rated professionals ready to bring your ideas to life
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <% @featured_freelancers.each do |freelancer| %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 text-center">
+            <div class="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+              <% if freelancer.avatar.attached? %>
+                <%= image_tag freelancer.avatar, class: "w-full h-full object-cover" %>
+              <% else %>
+                <span class="text-gray-600 font-medium text-lg">
+                  <%= freelancer.initials %>
+                </span>
+              <% end %>
+            </div>
+
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">
+              <%= freelancer.display_name %>
+            </h3>
+            
+            <% if freelancer.professional_title.present? %>
+              <p class="text-gray-600 text-sm mb-3">
+                <%= freelancer.professional_title %>
+              </p>
+            <% end %>
+
+            <div class="text-sm text-gray-500 mb-4">
+              <%= pluralize(freelancer.portfolios.count, 'project') %>
+            </div>
+
+            <%= link_to "View Portfolio", freelancer_portfolio_path(freelancer), 
+                class: "text-primary-700 hover:text-primary-800 font-medium text-sm" %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="text-center">
+        <%= link_to "View All Freelancers", portfolios_path, 
+            class: "bg-primary-700 text-white px-8 py-3 rounded-lg hover:bg-primary-800 transition-colors font-medium" %>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<!-- CTA Section -->
+<section class="py-16 bg-primary-700">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+      Ready to Get Started?
+    </h2>
+    <p class="text-xl text-primary-100 mb-8">
+      Join thousands of successful projects on FreelanceHub today
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <% unless user_signed_in? %>
+        <%= link_to "Sign Up as Client", new_user_registration_path, 
+            class: "bg-white text-primary-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors" %>
+        <%= link_to "Sign Up as Freelancer", new_user_registration_path, 
+            class: "bg-yellow-400 text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition-colors" %>
+      <% else %>
+        <% if current_user.client? %>
+          <%= link_to "Post Your First Project", new_project_path, 
+              class: "bg-white text-primary-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors" %>
+        <% else %>
+          <%= link_to "Find Your Next Project", projects_path, 
+              class: "bg-white text-primary-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors" %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</section>

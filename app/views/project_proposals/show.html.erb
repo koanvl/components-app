@@ -1,0 +1,223 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-4 mb-4">
+        <%= link_to @project, class: "text-gray-600 hover:text-gray-800 transition-colors" do %>
+          <i class="fas fa-arrow-left mr-2"></i>Back to Project
+        <% end %>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900">Proposal Details</h1>
+      <p class="text-gray-600 mt-2">Review this proposal for "<%= @project.title %>"</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Content -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Proposal Status -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-900">Proposal Status</h2>
+            <span class="px-4 py-2 rounded-full text-sm font-medium <%= @project_proposal.pending? ? 'bg-yellow-100 text-yellow-800' : @project_proposal.accepted? ? 'bg-green-100 text-green-800' : @project_proposal.rejected? ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' %>">
+              <%= @project_proposal.status.humanize %>
+            </span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span class="text-gray-600">Submitted:</span>
+              <span class="font-medium text-gray-900 ml-1">
+                <%= @project_proposal.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+              </span>
+            </div>
+            <div>
+              <span class="text-gray-600">Last Updated:</span>
+              <span class="font-medium text-gray-900 ml-1">
+                <%= @project_proposal.updated_at.strftime("%B %d, %Y at %I:%M %p") %>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Freelancer Info -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">About the Freelancer</h2>
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+              <% if @project_proposal.freelancer.avatar.attached? %>
+                <%= image_tag @project_proposal.freelancer.avatar, class: "w-full h-full object-cover" %>
+              <% else %>
+                <span class="text-gray-600 font-medium text-lg">
+                  <%= @project_proposal.freelancer.initials %>
+                </span>
+              <% end %>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">
+                <%= @project_proposal.freelancer.display_name %>
+              </h3>
+              <% if @project_proposal.freelancer.professional_title.present? %>
+                <p class="text-gray-600"><%= @project_proposal.freelancer.professional_title %></p>
+              <% end %>
+            </div>
+          </div>
+          
+          <% if @project_proposal.freelancer.bio.present? %>
+            <div class="mb-4">
+              <h4 class="font-medium text-gray-900 mb-2">Bio</h4>
+              <p class="text-gray-700"><%= simple_format(@project_proposal.freelancer.bio) %></p>
+            </div>
+          <% end %>
+
+          <div class="flex space-x-4">
+            <%= link_to "View Portfolio", freelancer_portfolio_path(@project_proposal.freelancer), 
+                class: "text-primary-700 hover:text-primary-800 font-medium text-sm" %>
+            <%= link_to "View Profile", profile_path, 
+                class: "text-primary-700 hover:text-primary-800 font-medium text-sm" %>
+          </div>
+        </div>
+
+        <!-- Proposal Content -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Proposal</h2>
+          <div class="prose max-w-none text-gray-700">
+            <%= simple_format(@project_proposal.proposal_text) %>
+          </div>
+        </div>
+
+        <!-- Actions (for project owner) -->
+        <% if @project.client == current_user %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Actions</h2>
+            
+            <% if @project_proposal.can_be_accepted? %>
+              <div class="flex space-x-4">
+                <%= link_to project_proposal_path(@project_proposal), 
+                    method: :patch, 
+                    params: { action_type: 'reject' },
+                    confirm: "Are you sure you want to reject this proposal?",
+                    class: "px-6 py-3 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium" do %>
+                  <i class="fas fa-times mr-2"></i>Reject Proposal
+                <% end %>
+                <%= link_to project_proposal_path(@project_proposal), 
+                    method: :patch, 
+                    params: { action_type: 'accept' },
+                    confirm: "Are you sure you want to accept this proposal? This will start the project and reject all other proposals.",
+                    class: "px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium" do %>
+                  <i class="fas fa-check mr-2"></i>Accept Proposal
+                <% end %>
+              </div>
+            <% else %>
+              <div class="text-center py-4">
+                <p class="text-gray-600">
+                  <% if @project_proposal.accepted? %>
+                    <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                    This proposal has been accepted.
+                  <% elsif @project_proposal.rejected? %>
+                    <i class="fas fa-times-circle text-red-600 mr-2"></i>
+                    This proposal has been rejected.
+                  <% else %>
+                    <i class="fas fa-info-circle text-gray-600 mr-2"></i>
+                    No actions available for this proposal.
+                  <% end %>
+                </p>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <!-- Actions (for freelancer) -->
+        <% if @project_proposal.freelancer == current_user %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Your Actions</h2>
+            
+            <% if @project_proposal.can_be_withdrawn? %>
+              <div class="flex space-x-4">
+                <%= link_to project_proposal_path(@project_proposal), 
+                    method: :patch, 
+                    params: { action_type: 'withdraw' },
+                    confirm: "Are you sure you want to withdraw your proposal?",
+                    class: "px-6 py-3 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium" do %>
+                  <i class="fas fa-undo mr-2"></i>Withdraw Proposal
+                <% end %>
+                <%= link_to project_proposal_path(@project_proposal), 
+                    method: :delete,
+                    confirm: "Are you sure you want to delete your proposal? This action cannot be undone.",
+                    class: "px-6 py-3 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium" do %>
+                  <i class="fas fa-trash mr-2"></i>Delete Proposal
+                <% end %>
+              </div>
+            <% else %>
+              <div class="text-center py-4">
+                <p class="text-gray-600">
+                  <% if @project_proposal.accepted? %>
+                    <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                    Congratulations! Your proposal has been accepted.
+                  <% elsif @project_proposal.rejected? %>
+                    <i class="fas fa-times-circle text-red-600 mr-2"></i>
+                    Unfortunately, your proposal was not selected.
+                  <% else %>
+                    <i class="fas fa-info-circle text-gray-600 mr-2"></i>
+                    Your proposal cannot be modified at this time.
+                  <% end %>
+                </p>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        <!-- Proposal Details -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Proposal Details</h3>
+          <div class="space-y-4">
+            <div>
+              <span class="text-sm text-gray-600">Proposed Budget</span>
+              <div class="text-2xl font-bold text-primary-700">$<%= @project_proposal.budget.to_i %></div>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">Timeline</span>
+              <div class="font-medium text-gray-900"><%= @project_proposal.timeline_text %></div>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">Status</span>
+              <div class="font-medium text-gray-900"><%= @project_proposal.status.humanize %></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Info -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Project Info</h3>
+          <div class="space-y-3">
+            <div>
+              <span class="text-sm text-gray-600">Title</span>
+              <div class="font-medium text-gray-900"><%= @project.title %></div>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">Budget Range</span>
+              <div class="font-medium text-gray-900"><%= @project.budget_range %></div>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">Deadline</span>
+              <div class="font-medium text-gray-900">
+                <%= @project.deadline.strftime("%B %d, %Y") %>
+              </div>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">Category</span>
+              <div class="font-medium text-gray-900"><%= @project.category.titleize %></div>
+            </div>
+          </div>
+          
+          <div class="mt-4 pt-4 border-t border-gray-200">
+            <%= link_to "View Full Project", @project, 
+                class: "text-primary-700 hover:text-primary-800 font-medium text-sm" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

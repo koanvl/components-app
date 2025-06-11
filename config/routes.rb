@@ -1,28 +1,26 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: {
-    registrations: "users/registrations"
-  }
+  devise_for :users
+  root "pages#home"
 
   # Profile routes
   resource :profile, only: [ :show, :edit, :update ]
 
-  # Portfolio routes (only for freelancers)
-  resources :portfolios, except: [ :index ]
-
-  # Public portfolio viewing
+  # Portfolio routes
+  resources :portfolios
   get "freelancer/:id/portfolio", to: "portfolios#freelancer_portfolio", as: "freelancer_portfolio"
 
-  # Root route
-  # root "home#index"
+  # Project routes
+  resources :projects do
+    resources :project_proposals, only: [ :create ], path: "proposals"
+  end
+
+  # Project proposal routes
+  resources :project_proposals, only: [ :show, :update, :destroy ], path: "proposals"
 
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/*
+  # PWA routes
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-
-  # Defines the root path route ("/")
-  root "pages#home"
-  # get 'drafts/invoice', to: 'drafts#invoice'
 end

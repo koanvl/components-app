@@ -31,21 +31,4 @@ class Portfolio < ApplicationRecord
   def primary_image
     images.first if has_images?
   end
-
-  def image_urls(size = :medium)
-    return [] unless has_images?
-
-    images.map do |image|
-      case size
-      when :small
-        image.variant(resize_to_limit: [ 300, 200 ])
-      when :medium
-        image.variant(resize_to_limit: [ 600, 400 ])
-      when :large
-        image.variant(resize_to_limit: [ 1200, 800 ])
-      else
-        image
-      end
-    end
-  end
 end

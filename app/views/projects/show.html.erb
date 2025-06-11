@@ -1,0 +1,276 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-4 mb-4">
+        <%= link_to projects_path, class: "text-gray-600 hover:text-gray-800 transition-colors" do %>
+          <i class="fas fa-arrow-left mr-2"></i>Back to Projects
+        <% end %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Content -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Project Header -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex-1">
+              <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @project.title %></h1>
+              <div class="flex items-center space-x-4 text-sm text-gray-600">
+                <span class="flex items-center">
+                  <i class="fas fa-user mr-1"></i>
+                  <%= @project.client.display_name %>
+                </span>
+                <span class="flex items-center">
+                  <i class="fas fa-calendar mr-1"></i>
+                  Posted <%= time_ago_in_words(@project.created_at) %> ago
+                </span>
+                <span class="flex items-center">
+                  <i class="fas fa-tag mr-1"></i>
+                  <%= @project.category.titleize %>
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-col items-end space-y-2">
+              <span class="px-4 py-2 rounded-full text-sm font-medium <%= @project.open? ? 'bg-green-100 text-green-800' : @project.in_progress? ? 'bg-blue-100 text-blue-800' : @project.completed? ? 'bg-gray-100 text-gray-800' : 'bg-red-100 text-red-800' %>">
+                <%= @project.status.humanize %>
+              </span>
+              <% if @project.client == current_user %>
+                <div class="flex space-x-2">
+                  <%= link_to edit_project_path(@project), class: "text-primary-700 hover:text-primary-800 text-sm font-medium" do %>
+                    <i class="fas fa-edit mr-1"></i>Edit
+                  <% end %>
+                  <%= link_to @project, method: :delete, 
+                      confirm: "Are you sure you want to delete this project?",
+                      class: "text-red-600 hover:text-red-700 text-sm font-medium" do %>
+                    <i class="fas fa-trash mr-1"></i>Delete
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Description -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Project Description</h2>
+          <div class="prose max-w-none text-gray-700">
+            <%= simple_format(@project.description) %>
+          </div>
+        </div>
+
+        <!-- Required Skills -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Required Skills</h2>
+          <div class="flex flex-wrap gap-2">
+            <% @project.skills_list.each do |skill| %>
+              <span class="px-3 py-1 bg-primary-100 text-primary-800 text-sm rounded-full font-medium">
+                <%= skill %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Proposal Form (for freelancers) -->
+        <% if @project.can_apply?(current_user) && !@project_proposal %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Submit Your Proposal</h2>
+            <%= form_with model: [@project, ProjectProposal.new], local: true, class: "space-y-4" do |form| %>
+              <div>
+                <%= form.label :proposal_text, "Your Proposal", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                <%= form.text_area :proposal_text, 
+                    rows: 6,
+                    placeholder: "Explain why you're the perfect fit for this project. Include your approach, relevant experience, and timeline.",
+                    class: "w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none" %>
+                <p class="text-sm text-gray-500 mt-1">Minimum 50 characters required</p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <%= form.label :budget, "Your Budget ($)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                  <%= form.number_field :budget, 
+                      min: @project.budget_min,
+                      max: @project.budget_max,
+                      step: 1,
+                      placeholder: @project.budget_min,
+                      class: "w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" %>
+                  <p class="text-sm text-gray-500 mt-1">Range: <%= @project.budget_range %></p>
+                </div>
+                <div>
+                  <%= form.label :timeline, "Timeline (days)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                  <%= form.number_field :timeline, 
+                      min: 1,
+                      step: 1,
+                      placeholder: "14",
+                      class: "w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" %>
+                  <p class="text-sm text-gray-500 mt-1">How many days do you need?</p>
+                </div>
+              </div>
+
+              <div class="flex justify-end">
+                <%= form.submit "Submit Proposal", class: "bg-primary-700 text-white px-6 py-3 rounded-lg hover:bg-primary-800 transition-colors font-medium" %>
+              </div>
+            <% end %>
+          </div>
+        <% elsif @project_proposal %>
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <div class="flex items-center mb-4">
+              <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+              <h3 class="text-lg font-medium text-blue-900">Your Proposal</h3>
+            </div>
+            <p class="text-blue-800 mb-4">You have already submitted a proposal for this project.</p>
+            <div class="flex space-x-4">
+              <%= link_to "View Proposal", project_proposal_path(@project_proposal), class: "text-blue-700 hover:text-blue-800 font-medium" %>
+              <% if @project_proposal.can_be_withdrawn? %>
+                <%= link_to project_proposal_path(@project_proposal), 
+                    method: :patch, 
+                    params: { action_type: 'withdraw' },
+                    confirm: "Are you sure you want to withdraw your proposal?",
+                    class: "text-red-600 hover:text-red-700 font-medium" do %>
+                  Withdraw Proposal
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% elsif !current_user&.freelancer? && current_user != @project.client %>
+          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+            <div class="flex items-center">
+              <i class="fas fa-lock text-yellow-600 mr-3"></i>
+              <p class="text-yellow-800">Only freelancers can submit proposals to projects.</p>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Proposals List (for project owner) -->
+        <% if @proposals && @proposals.any? %>
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">
+              Proposals (<%= @proposals.count %>)
+            </h2>
+            <div class="space-y-6">
+              <% @proposals.each do |proposal| %>
+                <div class="border border-gray-200 rounded-lg p-6 <%= proposal.accepted? ? 'bg-green-50 border-green-200' : proposal.rejected? ? 'bg-red-50 border-red-200' : '' %>">
+                  <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center space-x-4">
+                      <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                        <% if proposal.freelancer.avatar.attached? %>
+                          <%= image_tag proposal.freelancer.avatar, class: "w-full h-full object-cover" %>
+                        <% else %>
+                          <span class="text-gray-600 font-medium text-sm">
+                            <%= proposal.freelancer.initials %>
+                          </span>
+                        <% end %>
+                      </div>
+                      <div>
+                        <h3 class="font-semibold text-gray-900">
+                          <%= proposal.freelancer.display_name %>
+                        </h3>
+                        <p class="text-sm text-gray-600">
+                          <%= proposal.freelancer.professional_title %>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                      <span class="px-3 py-1 rounded-full text-xs font-medium <%= proposal.pending? ? 'bg-yellow-100 text-yellow-800' : proposal.accepted? ? 'bg-green-100 text-green-800' : proposal.rejected? ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' %>">
+                        <%= proposal.status.humanize %>
+                      </span>
+                      <div class="text-right">
+                        <div class="text-lg font-bold text-primary-700">$<%= proposal.budget.to_i %></div>
+                        <div class="text-sm text-gray-600"><%= proposal.timeline_text %></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p class="text-gray-700 mb-4"><%= proposal.proposal_text %></p>
+
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">
+                      Submitted <%= time_ago_in_words(proposal.created_at) %> ago
+                    </span>
+                    <% if proposal.can_be_accepted? %>
+                      <div class="flex space-x-3">
+                        <%= link_to project_proposal_path(proposal), 
+                            method: :patch, 
+                            params: { action_type: 'reject' },
+                            confirm: "Are you sure you want to reject this proposal?",
+                            class: "px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium" do %>
+                          Reject
+                        <% end %>
+                        <%= link_to project_proposal_path(proposal), 
+                            method: :patch, 
+                            params: { action_type: 'accept' },
+                            confirm: "Are you sure you want to accept this proposal? This will start the project.",
+                            class: "px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium" do %>
+                          Accept
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        <!-- Project Details -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Project Details</h3>
+          <div class="space-y-4">
+            <div>
+              <span class="text-sm text-gray-600">Budget Range</span>
+              <div class="text-xl font-bold text-primary-700"><%= @project.budget_range %></div>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">Deadline</span>
+              <div class="font-medium text-gray-900">
+                <%= @project.deadline.strftime("%B %d, %Y") %>
+                <% if @project.days_until_deadline > 0 %>
+                  <span class="text-sm text-gray-600">(<%= @project.days_until_deadline %> days left)</span>
+                <% else %>
+                  <span class="text-sm text-red-600">(Overdue)</span>
+                <% end %>
+              </div>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">Proposals</span>
+              <div class="font-medium text-gray-900"><%= @project.proposals_count %></div>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">Status</span>
+              <div class="font-medium text-gray-900"><%= @project.status.humanize %></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client Info -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">About the Client</h3>
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+              <% if @project.client.avatar.attached? %>
+                <%= image_tag @project.client.avatar, class: "w-full h-full object-cover" %>
+              <% else %>
+                <span class="text-gray-600 font-medium text-lg">
+                  <%= @project.client.initials %>
+                </span>
+              <% end %>
+            </div>
+            <div>
+              <h4 class="font-semibold text-gray-900"><%= @project.client.display_name %></h4>
+              <% if @project.client.company_name.present? %>
+                <p class="text-sm text-gray-600"><%= @project.client.company_name %></p>
+              <% end %>
+            </div>
+          </div>
+          <% if @project.client.bio.present? %>
+            <p class="text-gray-700 text-sm"><%= truncate(@project.client.bio, length: 150) %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

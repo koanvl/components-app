@@ -13,6 +13,11 @@ class User < ApplicationRecord
   has_one_attached :avatar
   has_many :portfolios, dependent: :destroy
 
+  # Project associations
+  has_many :projects, foreign_key: "client_id", dependent: :destroy
+  has_many :project_proposals, foreign_key: "freelancer_id", dependent: :destroy
+  has_many :proposed_projects, through: :project_proposals, source: :project
+
   # Validations
   validates :first_name, presence: true, length: { maximum: 50 }
   validates :last_name, presence: true, length: { maximum: 50 }
@@ -26,11 +31,37 @@ class User < ApplicationRecord
 
   # Helper methods
   def display_name
-    "#{first_name} #{last_name}".strip
+    if first_name.present? && last_name.present?
+      "#{first_name} #{last_name}"
+    elsif first_name.present?
+      first_name
+    else
+      email.split("@").first.humanize
+    end
   end
 
   def initials
-    "#{first_name&.first}#{last_name&.first}".upcase
+    if first_name.present? && last_name.present?
+      "#{first_name.first}#{last_name.first}".upcase
+    elsif first_name.present?
+      first_name.first(2).upcase
+    elsif email.present?
+      email.first(2).upcase
+    else
+      "U"
+    end
+  end
+
+  def professional_title
+    # This would come from a profile field, for now return a default
+    case role
+    when "freelancer"
+      "Freelancer"
+    when "client"
+      "Client"
+    else
+      "User"
+    end
   end
 
   def profile_complete?

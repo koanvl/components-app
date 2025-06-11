@@ -1,2 +1,143 @@
-<h1>Portfolios#index</h1>
-<p>Find me in app/views/portfolios/index.html.erb</p>
+<div class="max-w-7xl mx-auto p-6">
+  <!-- Header -->
+  <div class="text-center mb-12">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">Discover Talented Freelancers</h1>
+    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+      Browse through our community of skilled freelancers and explore their amazing work
+    </p>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+    <div class="flex flex-col md:flex-row gap-4">
+      <div class="flex-1">
+        <input type="text" placeholder="Search freelancers by name or skills..." 
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+      </div>
+      <div class="flex gap-2">
+        <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+          <option>All Skills</option>
+          <option>Web Development</option>
+          <option>Mobile Development</option>
+          <option>UI/UX Design</option>
+          <option>Data Science</option>
+        </select>
+        <button class="px-6 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500">
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Freelancers Grid -->
+  <% if @freelancers.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% @freelancers.each do |freelancer| %>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+          <!-- Freelancer Header -->
+          <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center space-x-4">
+              <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
+                <% if freelancer.avatar.attached? %>
+                  <%= image_tag freelancer.avatar, 
+                      class: "w-full h-full object-cover",
+                      alt: freelancer.display_name %>
+                <% else %>
+                  <div class="w-full h-full bg-primary-700 flex items-center justify-center text-white text-lg font-bold">
+                    <%= freelancer.initials %>
+                  </div>
+                <% end %>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900">
+                  <%= link_to freelancer.display_name, freelancer_portfolio_path(freelancer), 
+                      class: "hover:text-primary-600" %>
+                </h3>
+                <% if freelancer.professional_title.present? %>
+                  <p class="text-sm text-gray-600"><%= freelancer.professional_title %></p>
+                <% end %>
+                <div class="flex items-center mt-2">
+                  <span class="text-xs bg-primary-100 text-primary-800 px-2 py-1 rounded-full">
+                    <%= pluralize(freelancer.portfolios.count, 'project') %>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Portfolio Preview -->
+          <div class="p-4">
+            <% if freelancer.portfolios.any? %>
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <% freelancer.portfolios.limit(4).each do |portfolio| %>
+                  <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                    <% if portfolio.has_images? %>
+                      <%= image_tag portfolio.primary_image, 
+                          class: "w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer",
+                          alt: portfolio.title %>
+                    <% else %>
+                      <div class="w-full h-full flex items-center justify-center text-gray-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+
+            <!-- Bio Preview -->
+            <% if freelancer.bio.present? %>
+              <p class="text-sm text-gray-600 mb-4 line-clamp-2">
+                <%= truncate(freelancer.bio, length: 100) %>
+              </p>
+            <% end %>
+
+            <!-- Skills Preview -->
+            <% recent_portfolio = freelancer.portfolios.recent.first %>
+            <% if recent_portfolio&.technologies.present? %>
+              <div class="flex flex-wrap gap-1 mb-4">
+                <% recent_portfolio.technology_list.first(3).each do |tech| %>
+                  <span class="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded">
+                    <%= tech %>
+                  </span>
+                <% end %>
+                <% if recent_portfolio.technology_list.count > 3 %>
+                  <span class="bg-gray-100 text-gray-500 text-xs font-medium px-2 py-1 rounded">
+                    +<%= recent_portfolio.technology_list.count - 3 %>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+
+            <!-- Action Button -->
+            <div class="text-center">
+              <%= link_to "View Portfolio", freelancer_portfolio_path(freelancer), 
+                  class: "w-full inline-block text-center px-4 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No freelancers found</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Be the first to create a portfolio and showcase your work!
+      </p>
+      <% if current_user&.freelancer? %>
+        <div class="mt-6">
+          <%= link_to "Create Portfolio Item", new_portfolio_path, 
+              class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Pagination -->
+  <!-- Removed pagination for now -->
+</div>

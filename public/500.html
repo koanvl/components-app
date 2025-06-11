@@ -1,66 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>We're sorry, but something went wrong (500)</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-  .rails-default-error-page {
-    background-color: #EFEFEF;
-    color: #2E2F30;
-    text-align: center;
-    font-family: arial, sans-serif;
-    margin: 0;
-  }
-
-  .rails-default-error-page div.dialog {
-    width: 95%;
-    max-width: 33em;
-    margin: 4em auto 0;
-  }
-
-  .rails-default-error-page div.dialog > div {
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #BBB;
-    border-top: #B00100 solid 4px;
-    border-top-left-radius: 9px;
-    border-top-right-radius: 9px;
-    background-color: white;
-    padding: 7px 12% 0;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
-
-  .rails-default-error-page h1 {
-    font-size: 100%;
-    color: #730E15;
-    line-height: 1.5em;
-  }
-
-  .rails-default-error-page div.dialog > p {
-    margin: 0 0 1em;
-    padding: 1em;
-    background-color: #F7F7F7;
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #999;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-top-color: #DADADA;
-    color: #666;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Server Error - FreelanceHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body class="rails-default-error-page">
-  <!-- This file lives in public/500.html -->
-  <div class="dialog">
-    <div>
-      <h1>We're sorry, but something went wrong.</h1>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+  <div class="max-w-md mx-auto text-center px-4">
+    <div class="mb-8">
+      <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
+      <h1 class="text-6xl font-bold text-gray-900 mb-2">500</h1>
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4">Server Error</h2>
+      <p class="text-gray-600 mb-8">
+        Oops! Something went wrong on our end. 
+        We're working to fix this issue. Please try again in a few minutes.
+      </p>
     </div>
-    <p>If you are the application owner check the logs for more information.</p>
+
+    <div class="space-y-4">
+      <a href="/" class="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+        <i class="fas fa-home mr-2"></i>
+        Go Home
+      </a>
+      
+      <button onclick="window.location.reload()" class="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium ml-4">
+        <i class="fas fa-redo mr-2"></i>
+        Try Again
+      </button>
+      
+      <div class="text-sm text-gray-500 mt-6">
+        <p>Or try these popular pages:</p>
+        <div class="mt-2 space-x-4">
+          <a href="/projects" class="text-primary-600 hover:text-primary-700">Browse Projects</a>
+          <a href="/portfolios" class="text-primary-600 hover:text-primary-700">Find Freelancers</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 text-xs text-gray-400">
+      <p>If this problem persists, please contact our support team.</p>
+    </div>
   </div>
 </body>
 </html>
