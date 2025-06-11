@@ -1,0 +1,66 @@
+<section class="bg-gray-50 px-6 py-8 antialiased dark:bg-gray-900 md:py-16 xl:px-6">
+  <div class="mb-8 max-w-screen-xl mx-auto flex items-center justify-between gap-4">
+
+    <form class="w-full mx-auto">
+      <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+          <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+          </svg>
+        </div>
+        <input type="search" id="default-search"
+          class="bg-white block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          placeholder="Type any keyword..." required />
+        <button type="submit"
+          class="text-white absolute end-2.5 bottom-2.5 bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Search</button>
+      </div>
+    </form>
+
+    <div class="text-center shrink-0 block lg:hidden">
+      <button
+        class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-4 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+        type="button" data-drawer-target="drawer-example" data-drawer-show="drawer-example"
+        aria-controls="drawer-example">
+        Show filter
+      </button>
+    </div>
+
+  
+
+  </div>
+  <div class="mx-auto w-full max-w-screen-xl rounded-lg">
+    <div class="flex flex-col items-stretch md:flex-row gap-6">
+        <!-- drawer component -->
+    
+      <div id="drawer-example"  class="order-2 shrink-0 space-y-2 border-gray-200 pb-4 dark:border-gray-700 md:order-1 md:w-72 p-4 md:p-6  bg-white  dark:bg-gray-800 rounded-lg fixed lg:relative top-0 left-0 z-40 h-screen p-4 overflow-y-auto transition-transform -translate-x-full lg:translate-none w-80 dark:bg-gray-800" tabindex="-1" aria-labelledby="drawer-label">
+        <div>
+        <h5 id="drawer-label"
+          class="inline-flex items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400 lg:hidden"><svg
+            class="w-4 h-4 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+            viewBox="0 0 20 20">
+            <path
+              d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+          </svg>Filters</h5>
+        <button type="button" data-drawer-hide="drawer-example" aria-controls="drawer-example"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 lg:rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white lg:hidden">
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close menu</span>
+        </button>
+        <%= render 'pages/partials/filter' %>
+  
+  
+      </div>
+      </div>
+
+      <div class="order-1 w-full">
+        <%= render 'pages/partials/people_grid' %>
+      </div>
+    </div>
+  </div>
+</section>

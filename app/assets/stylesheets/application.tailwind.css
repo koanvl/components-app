@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+
+@theme {
+  --color-primary-50: #effefc;
+  --color-primary-100: #c8fff7;
+  --color-primary-200: #8ffdef;
+  --color-primary-300: #53f5e6;
+  --color-primary-400: #20e1d5;
+  --color-primary-500: #08c4bc;
+  --color-primary-600: #039e9a;
+  --color-primary-700: #077e7d;
+  --color-primary-800: #0b6464;
+  --color-primary-900: #0f5252;
+  --color-primary-950: #013032;
+}
+
+div[drawer-backdrop] {
+  @apply bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-38
+}
